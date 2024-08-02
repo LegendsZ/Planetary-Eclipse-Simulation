@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "../include/_Window.h"
+#include "../include/Window.h"
 
 int main(int argc, char* argv[]){
 	std::cout << "Starting PlanetarySimulation...";
