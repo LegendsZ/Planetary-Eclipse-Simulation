@@ -1,6 +1,6 @@
 #include "../include/Window.h"
 
-Window* Window::window = nullptr;
+std::vector<Window*> Window::windows;
 
 
 Window::Window(const int& width, const int& height):
@@ -10,43 +10,50 @@ Window::Window(const int& width, const int& height):
 		return;
 		//std::cout / write to error buffer/handler?
 	}
-	glfwWindow = glfwCreateWindow(_width, _height, "PlanetarySimulation", NULL, NULL);
-	if (!glfwWindow){
+	_glfwWindow = glfwCreateWindow(_width, _height, "PlanetarySimulation", NULL, NULL);
+	if (!_glfwWindow){
 		glfwTerminate();
 		return;
 		//std::cout / write to error buffer/handler?
 	}
-	glfwMakeContextCurrent(glfwWindow);
-	
-	//RENDER LOOP
-	while (!glfwWindowShouldClose(glfwWindow))
-    	{
-        	/* Render here */
-        	glClear(GL_COLOR_BUFFER_BIT);
-
-        	/* Swap front and back buffers */
-        	glfwSwapBuffers(glfwWindow);
-
-        	/* Poll for and process events */
-        	glfwPollEvents();
-    	}
-	glfwDestroyWindow(glfwWindow);
-    	glfwTerminate();
-
-	Window::window = this;
+	glfwMakeContextCurrent(_glfwWindow);	
 }
 
-Window* Window::createWindow(const int& width, const int& height){
-	if (window == nullptr){
-		window = new Window(width, height);
-		return window;
-	}else{
-		return nullptr;
+void Window::render() const{
+        /* Render here */
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        /* Swap front and back buffers */
+        glfwSwapBuffers(_glfwWindow);
+
+        /* Poll for and process events */
+        glfwPollEvents();
+}
+
+void Window::renderAll(){
+	for (Window* w : windows){
+		w->render();
 	}
 }
 
-Window* Window::getWindow(){
-	return window;
+void Window::close(){
+	glfwDestroyWindow(_glfwWindow);
+	glfwTerminate(); //in the case of multiple closures, should this be moved?
+}
+
+void Window::closeAll(){
+	for (Window* w : windows){
+		w->close();
+	}
+	//glfwTerminate(); ???
+}
+
+std::vector<Window*> Window::getWindows(){
+	return windows;
+}
+
+bool Window::shouldClose() const {
+	return glfwWindowShouldClose(_glfwWindow);
 }
 
 int Window::getWidth() const {

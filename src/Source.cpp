@@ -2,13 +2,18 @@
 
 #include "../include/Window.h"
 
-#define GL_SILENCE_DEPRECATION // silence warnings
+//silence warnings
+#define GL_SILENCE_DEPRECATION
 
 int main(int argc, char* argv[]){
 	std::cout << "Starting PlanetarySimulation...";
 	std::cout << "OK!\n";
 
-	Window* window = Window::createWindow(500,500);
+	Window* window = new Window(500,500);
+
+	while (!window->shouldClose()){
+		window->render();
+	}
 
 	std::cout << "Goodbye!\n";
 	return 0;
