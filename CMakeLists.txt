@@ -18,4 +18,4 @@ target_sources(PlanetarySimulation PRIVATE
 target_include_directories(PlanetarySimulation PRIVATE "${CMAKE_SOURCE_DIR}/include")
 
 # Link libraries for the executable
-target_link_libraries(PlanetarySimulation glfw)
+target_link_libraries(PlanetarySimulation glfw "-framework OpenGL")

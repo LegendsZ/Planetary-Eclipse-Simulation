@@ -19,7 +19,7 @@ Window::Window(const int& width, const int& height):
 	glfwMakeContextCurrent(glfwWindow);
 	
 	//RENDER LOOP
-	while (true)
+	while (!glfwWindowShouldClose(glfwWindow))
     	{
         	/* Render here */
         	glClear(GL_COLOR_BUFFER_BIT);
@@ -30,6 +30,7 @@ Window::Window(const int& width, const int& height):
         	/* Poll for and process events */
         	glfwPollEvents();
     	}
+	glfwDestroyWindow(glfwWindow);
     	glfwTerminate();
 
 	Window::window = this;
