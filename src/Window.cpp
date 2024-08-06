@@ -1,14 +1,14 @@
 #include "../include/Window.h"
 
+bool Window::initialized=false;
 std::vector<Window*> Window::windows;
 int Window::countRendering = 0;
 
 Window::Window(const int& width, const int& height, bool visible, double cfps, int vsync):
 	_width(width), _height(height), _visible(visible), _cFps(cfps), _frameTime(1.0/cfps), _vsync(vsync)
 {
-	if (!glfwInit()){
+	if (!initialized) {
 		return;
-		//std::cout / write to error buffer/handler?
 	}
 
 	//Set width/height to max if specified
@@ -30,6 +30,18 @@ Window::Window(const int& width, const int& height, bool visible, double cfps, i
 	windows.push_back(this);
 }
 
+bool Window::initGLFWGLAD() {
+	std::cout << "Initializing GLFW...";
+	if (!glfwInit()) { //initialize glfw
+		std::cerr <<  "FAILED!\n";
+		return false;
+	}
+	std::cout << "OK!\n";
+	Window::initialized=true;
+	return true;
+}
+
+
 void Window::makeContextCurrent() const{
 	glfwMakeContextCurrent(_glfwWindow);
 }
@@ -41,6 +53,7 @@ void Window::render() const{
 	}
 	/* Render here */
 	//glfwMakeContextCurrent(_glfwWindow);
+	glClearColor(5.0f,1.0f,0.0f,1.01f);
 	/* Clear the screen */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	/* Swap front and back buffers */
@@ -89,6 +102,10 @@ void Window::renderLoop(Window* window) {
 	double deltaTime;
 
 	glfwMakeContextCurrent(window->_glfwWindow);
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { //initialize glad
+		std::cerr << "FAILED TO LOAD GLAD!\n";
+		return;
+	}
 	glfwSwapInterval(window->_vsync); //enables/disables vsync based off user input
 
 	window->_rendering=true;
@@ -98,10 +115,10 @@ void Window::renderLoop(Window* window) {
 		currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
-		//glfwMakeContextCurrent(_glfwWindow);
-		window->render();
-		glfwSwapBuffers(window->_glfwWindow);
 
+		window->render();
+
+		window->processInput();
 
 		// Increment FPS counter
 		window->_cFps++;
@@ -118,6 +135,12 @@ void Window::renderLoop(Window* window) {
 	}
 	window->_rendering=false;
 	Window::countRendering--;
+}
+
+void Window::processInput() {
+	if(glfwGetKey(_glfwWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(_glfwWindow, true);
+	}
 }
 
 

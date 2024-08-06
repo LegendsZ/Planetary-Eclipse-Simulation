@@ -1,14 +1,16 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <chrono>
 #include <thread>
-#include <iostream> //for printing fps
+#include <iostream>
 
 class Window{
 	public:
+		static bool initialized;
 		static std::vector<Window*> windows;
 		static int countRendering;
 		GLFWwindow* _glfwWindow;
@@ -26,6 +28,8 @@ class Window{
 		Window(const Window&) = delete;
 		Window& operator=(const Window&)=delete;
 
+		static bool initGLFWGLAD();
+
 		void makeContextCurrent() const;
 
 		void render() const;
@@ -35,6 +39,8 @@ class Window{
 		static void startAllRenderLoop();
 		static void stopAllRenderLoop();
 		static void renderLoop(Window* window);
+
+		void processInput();
 
 		void close();
 		static void closeAll();

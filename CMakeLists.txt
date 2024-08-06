@@ -12,6 +12,7 @@ add_executable(PlanetarySimulation)
 target_sources(PlanetarySimulation PRIVATE
   ${CMAKE_SOURCE_DIR}/src/Source.cpp
   ${CMAKE_SOURCE_DIR}/src/Window.cpp
+  ${CMAKE_SOURCE_DIR}/src/glad.c
 )
 
 # Include directories for the executable

@@ -32,9 +32,13 @@ int main(int argc, char* argv[]){
 		}
 	}
 
-	std::cout << "Starting PlanetarySimulation...";
+	std::cout << "Starting PlanetarySimulation...\n";
+	if (!Window::initGLFWGLAD()) {
+		std::cerr << "Failed to start PlanetarySimulation!\n";
+		return 1;
+	}
 	new Window(width,height,true,fps,vsync);
-	std::cout << "OK!\n";
+	std::cout << "Started PlanetarySimulation!\n";
 	Window::startAllRenderLoop();
 	while (Window::countRendering!= 0){
 		/* Poll for and process events */
