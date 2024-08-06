@@ -1,8 +1,10 @@
-#include <iostream>
+#ifdef _WIN32
+#define WINDOWS
+#elif __APPLE__
+#define APPLE
+#endif
 
-//Needed for render loop
-#include <thread>
-#include <chrono>
+#include <iostream>
 
 #include "../include/Window.h"
 
@@ -34,7 +36,10 @@ int main(int argc, char* argv[]){
 	new Window(width,height,true,fps,vsync);
 	std::cout << "OK!\n";
 	Window::startAllRenderLoop();
-
+	while (Window::countRendering!= 0){
+		/* Poll for and process events */
+		glfwPollEvents();
+	};
 	std::cout << "Goodbye!\n";
 	return 0;
 }

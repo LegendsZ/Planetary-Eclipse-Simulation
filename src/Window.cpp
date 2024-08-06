@@ -1,7 +1,7 @@
 #include "../include/Window.h"
-#include <iostream>
 
 std::vector<Window*> Window::windows;
+int Window::countRendering = 0;
 
 Window::Window(const int& width, const int& height, bool visible, double cfps, int vsync):
 	_width(width), _height(height), _visible(visible), _cFps(cfps), _frameTime(1.0/cfps), _vsync(vsync)
@@ -54,42 +54,14 @@ void Window::renderAll(){
 }
 
 void Window::startRenderLoop() {
-	//vars for tracking fps
-	double lastTime = glfwGetTime();
-	double fpsTime = lastTime;
-	double currentTime;
-	double deltaTime;
+	_thread = new std::thread(Window::renderLoop, this);
+	Window::countRendering++;
+}
 
-	glfwMakeContextCurrent(_glfwWindow);
-	glfwSwapInterval(_vsync); //enables/disables vsync based off user input
-
-	_rendering=true;
-	while (!glfwWindowShouldClose(_glfwWindow)) {
-		// Calculate the time taken for one frame for the current window
-		currentTime = glfwGetTime();
-		deltaTime = currentTime - lastTime;
-		lastTime = currentTime;
-
-		//glfwMakeContextCurrent(_glfwWindow);
-		render();
-		glfwSwapBuffers(_glfwWindow);
-		/* Poll for and process events */
-		glfwPollEvents();
-
-		_cFps++;
-
-		if (currentTime - fpsTime >= 1.0) {
-			std::cout << "FPS: " << _cFps << "\n";
-			_cFps = 0;
-			fpsTime = currentTime;
-		}
-
-		//Delays till next frame accordingly with vsync setting
-		if (_vsync == 0 && deltaTime < _frameTime) {
-			std::this_thread::sleep_for(std::chrono::duration<double>(_frameTime - deltaTime));
-		}
-	}
+void Window::stopRenderLoop() {
 	_rendering=false;
+	_thread->join();
+	delete _thread;
 }
 
 
@@ -100,6 +72,54 @@ void Window::startAllRenderLoop() {
 		}
 	}
 }
+
+void Window::stopAllRenderLoop() {
+	for (Window* w : windows){
+		if (w->_rendering) {
+			w->stopRenderLoop();
+		}
+	}
+}
+
+void Window::renderLoop(Window* window) {
+	//vars for tracking fps
+	double lastTime = glfwGetTime();
+	double fpsTime = lastTime;
+	double currentTime;
+	double deltaTime;
+
+	glfwMakeContextCurrent(window->_glfwWindow);
+	glfwSwapInterval(window->_vsync); //enables/disables vsync based off user input
+
+	window->_rendering=true;
+	while (window->_rendering) {
+		if(glfwWindowShouldClose(window->_glfwWindow)) break;
+		// Calculate the time taken for one frame for the current window
+		currentTime = glfwGetTime();
+		deltaTime = currentTime - lastTime;
+		lastTime = currentTime;
+		//glfwMakeContextCurrent(_glfwWindow);
+		window->render();
+		glfwSwapBuffers(window->_glfwWindow);
+
+
+		// Increment FPS counter
+		window->_cFps++;
+
+		if (currentTime - fpsTime >= 1.0) {
+			std::cout << "FPS: " << window->_cFps << "\n";
+			window->_cFps = 0;
+			fpsTime = currentTime;
+		}
+		//Delays till next frame accordingly with vsync setting
+		if (window->_vsync == 0 && deltaTime < window->_frameTime) {
+			std::this_thread::sleep_for(std::chrono::duration<double>(window->_frameTime - deltaTime));
+		}
+	}
+	window->_rendering=false;
+	Window::countRendering--;
+}
+
 
 void Window::close(){
 	glfwDestroyWindow(_glfwWindow);
