@@ -16,6 +16,8 @@ class Window{
 		GLFWwindow* _glfwWindow;
 		int _width;
 		int _height;
+		int _frameBufferWidth;
+		int _frameBufferHeight;
 		bool _visible;
 		int _fps;
 		int _cFps;
@@ -28,9 +30,10 @@ class Window{
 		Window(const Window&) = delete;
 		Window& operator=(const Window&)=delete;
 
-		static bool initGLFWGLAD();
+		static bool initGLFW();
+		static bool loadGlad();
 
-		void makeContextCurrent() const;
+		inline void makeContextCurrent() const;
 
 		void render() const;
 		static void renderAll();

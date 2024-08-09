@@ -5,7 +5,7 @@ std::vector<Window*> Window::windows;
 int Window::countRendering = 0;
 
 Window::Window(const int& width, const int& height, bool visible, double cfps, int vsync):
-	_width(width), _height(height), _visible(visible), _cFps(cfps), _frameTime(1.0/cfps), _vsync(vsync)
+	_width(width), _height(height), _visible(visible), _cFps(cfps), _frameTime(1.0/cfps), _vsync(vsync), _rendering(false), _frameBufferWidth(0), _frameBufferHeight(0)
 {
 	if (!initialized) {
 		return;
@@ -21,16 +21,30 @@ Window::Window(const int& width, const int& height, bool visible, double cfps, i
 		_height = mode->height;
 	}
 
+	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //problematic?
+	glfwWindowHint(GLFW_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_VERSION_MINOR, 4);
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
+#ifdef __APPLE__
+	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //problematic?
+#endif
+
 	_glfwWindow = glfwCreateWindow(_width, _height, "PlanetarySimulation", NULL, NULL);
 	if (!_glfwWindow){
+		std::cerr << "Failed to create glfwWindow!\n";
 		glfwTerminate();
 		return;
-		//std::cout / write to error buffer/handler?
 	}
+	glfwMakeContextCurrent(_glfwWindow);
+	loadGlad();
+	glfwGetFramebufferSize(_glfwWindow, &_frameBufferWidth, &_frameBufferHeight);
+	//std::cout << _frameBufferWidth << " " << _frameBufferHeight << "\n";
+	glViewport(0,0,_frameBufferWidth,_frameBufferHeight);
 	windows.push_back(this);
 }
 
-bool Window::initGLFWGLAD() {
+bool Window::initGLFW() {
 	std::cout << "Initializing GLFW...";
 	if (!glfwInit()) { //initialize glfw
 		std::cerr <<  "FAILED!\n";
@@ -46,6 +60,14 @@ void Window::makeContextCurrent() const{
 	glfwMakeContextCurrent(_glfwWindow);
 }
 
+bool Window::loadGlad() {
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { //initialize glad
+		std::cerr << "FAILED TO LOAD GLAD!\n";
+		return false;
+	}
+	return true;
+}
+
 
 void Window::render() const{
 	if (!_visible) {
@@ -55,9 +77,10 @@ void Window::render() const{
 	//glfwMakeContextCurrent(_glfwWindow);
 	glClearColor(5.0f,1.0f,0.0f,1.01f);
 	/* Clear the screen */
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	/* Swap front and back buffers */
 	glfwSwapBuffers(_glfwWindow);
+	glFlush();
 }
 
 void Window::renderAll(){
@@ -102,8 +125,8 @@ void Window::renderLoop(Window* window) {
 	double deltaTime;
 
 	glfwMakeContextCurrent(window->_glfwWindow);
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { //initialize glad
-		std::cerr << "FAILED TO LOAD GLAD!\n";
+	if (!loadGlad()) {
+		Window::countRendering--;
 		return;
 	}
 	glfwSwapInterval(window->_vsync); //enables/disables vsync based off user input

@@ -1,11 +1,10 @@
-#ifdef _WIN32
-#define WINDOWS
+/*#ifdef _WIN32
 #elif __APPLE__
-#define APPLE
-#endif
+#endif*/
 
 #include <iostream>
 
+#include "../include/VECTOR3D.h"
 #include "../include/Window.h"
 
 //silence warnings
@@ -33,15 +32,21 @@ int main(int argc, char* argv[]){
 	}
 
 	std::cout << "Starting PlanetarySimulation...\n";
-	if (!Window::initGLFWGLAD()) {
+	if (!Window::initGLFW()) {
 		std::cerr << "Failed to start PlanetarySimulation!\n";
 		return 1;
 	}
-	new Window(width,height,true,fps,vsync);
+	if (!((new Window(width,height,true,fps,vsync))->_glfwWindow)) {
+		std::cerr << "Failed to start PlanetarySimulation!\n";
+		return 1;
+	}
 	std::cout << "Started PlanetarySimulation!\n";
 	Window::startAllRenderLoop();
+	//glutMainLoop();
+
+
 	while (Window::countRendering!= 0){
-		/* Poll for and process events */
+		//Poll for and process events #1#
 		glfwPollEvents();
 	};
 	std::cout << "Goodbye!\n";
