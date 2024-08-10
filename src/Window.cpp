@@ -32,7 +32,6 @@ Window::Window(const int& width, const int& height, bool visible, double cfps, i
 
 	_glfwWindow = glfwCreateWindow(_width, _height, "PlanetarySimulation", NULL, NULL);
 	if (!_glfwWindow){
-		std::cerr << "Failed to create glfwWindow!\n";
 		glfwTerminate();
 		return;
 	}
@@ -40,17 +39,17 @@ Window::Window(const int& width, const int& height, bool visible, double cfps, i
 	loadGlad();
 	glfwGetFramebufferSize(_glfwWindow, &_frameBufferWidth, &_frameBufferHeight);
 	//std::cout << _frameBufferWidth << " " << _frameBufferHeight << "\n";
-	glViewport(0,0,_frameBufferWidth,_frameBufferHeight);
+	//glViewport(0,0,_frameBufferWidth,_frameBufferHeight);
 	windows.push_back(this);
 }
 
 bool Window::initGLFW() {
-	std::cout << "Initializing GLFW...";
+	//std::cout << "Initializing GLFW...";
 	if (!glfwInit()) { //initialize glfw
 		std::cerr <<  "FAILED!\n";
 		return false;
 	}
-	std::cout << "OK!\n";
+	//std::cout << "OK!\n";
 	Window::initialized=true;
 	return true;
 }
@@ -141,8 +140,6 @@ void Window::renderLoop(Window* window) {
 
 		window->render();
 
-		window->processInput();
-
 		// Increment FPS counter
 		window->_cFps++;
 
@@ -159,13 +156,6 @@ void Window::renderLoop(Window* window) {
 	window->_rendering=false;
 	Window::countRendering--;
 }
-
-void Window::processInput() {
-	if(glfwGetKey(_glfwWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(_glfwWindow, true);
-	}
-}
-
 
 void Window::close(){
 	glfwDestroyWindow(_glfwWindow);

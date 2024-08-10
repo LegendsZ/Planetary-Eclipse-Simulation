@@ -1,6 +1,5 @@
 #include "../include/Initializer.h"
 
-
 namespace Initializer {
 	/*bool initGlut(int argc, char** argv, const int& vWidth, const int& vHeight) {
 		glutInit(&argc, argv);
@@ -12,7 +11,7 @@ namespace Initializer {
 	}*/
 
 	bool initOpenGL() {
-		glLightfv(GL_LIGHT0, GL_AMBIENT, staticPropertyValues::light_ambient);
+		/*glLightfv(GL_LIGHT0, GL_AMBIENT, staticPropertyValues::light_ambient);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, staticPropertyValues::light_diffuse);
 		glLightfv(GL_LIGHT0, GL_SPECULAR, staticPropertyValues::light_specular);
 		glLightfv(GL_LIGHT1, GL_AMBIENT, staticPropertyValues::light_ambient);
@@ -49,19 +48,17 @@ namespace Initializer {
 		VECTOR3D specular = VECTOR3D(0.04f, 0.04f, 0.04f);
 		float shininess = 0.2;
 		callbackFunctions::roomMesh->SetMaterial(ambient, diffuse, specular, shininess);
+		*/
 
 		return true;
 	}
 
 
-	bool setCallbackFunctions() {
-		glutDisplayFunc(callbackFunctions::display);
-		glutReshapeFunc(callbackFunctions::reshape);
-		glutMouseFunc(callbackFunctions::mouse);
-		glutMotionFunc(callbackFunctions::mouseMotionHandler);
-		glutKeyboardFunc(callbackFunctions::keyboardDown);
-		glutKeyboardUpFunc(callbackFunctions::keyboardUp);
-		glutSpecialFunc(callbackFunctions::functionKeys);
+	bool setCallbackFunctions(GLFWwindow* window) {
+		glfwSetFramebufferSizeCallback(window, callbackFunctions::reshape);
+    	glfwSetMouseButtonCallback(window, callbackFunctions::mouse);
+    	glfwSetCursorPosCallback(window, callbackFunctions::mouseMotionHandler);
+    	glfwSetKeyCallback(window, callbackFunctions::keyHandler);
 		return true;
 	}
 
@@ -76,8 +73,8 @@ namespace Initializer {
 			//game::gameObjects[i]->Write("gobj\\object" + std::to_string(i) + ".bin");
 			//game::gameObjects.push_back((GameObject*) new Cube("gobj\\object" + std::to_string(i) + ".bin"));
 		}
-		//init */
 
+		//NEWLY commented out portion
 		VECTOR3D origin = VECTOR3D(-16.0f, 0.0f, 16.0f);
 		callbackFunctions::roomMesh = new RoomMesh(16, 32.0);
 		callbackFunctions::roomMesh->InitMesh(16, origin, 32.0, 32.0);
@@ -95,70 +92,62 @@ namespace Initializer {
 		sample->SetMaterial(ambient, diffuse, specular, shininess);
 		game::gameObjects.push_back((GameObject*)sample);
 
-		/*
+
 		VECTOR3D ambient = VECTOR3D(0.0f, 0.05f, 0.0f);
 		VECTOR3D diffuse = VECTOR3D(0.4f, 0.8f, 0.4f);
 		VECTOR3D specular = VECTOR3D(0.04f, 0.04f, 0.04f);
 		float shininess = 0.2;
 		callbackFunctions::roomMesh->SetMaterial(ambient, diffuse, specular, shininess);
-		*/
+
 		Camera::makeCamera();
 		game::gameObjects.push_back((GameObject*)Camera::camera);
 
 		//make gui elements
 		GUIElements::GUIElement* picbox = (GUIElements::GUIElement*)new GUIElements::PictureBox("", { Camera::camera->eye->x, Camera::camera->eye->y }, 5.0, 5.0);
 		Camera::camera->GUIElements.push_back(picbox);
-
+		*/
 		return true;
 	}
 
-	bool InitializeAll(int argc, char** argv, const int& vWidth, const int& vHeight) {
-		std::cout << "Initializing Glut...";
-		if (Initializer::initGlut(argc, argv, vWidth, vHeight)) {
-			std::cout << "OK!\n";
-		}
-		else {
-			std::cout << "FAILED!\n";
+	bool InitializeAll(int width, int height, int fps, int vsync) {
+		if (!Window::initGLFW()) {
+			errorMessage = "Failed to initialize GLFW!";
 			return false;
 		}
-		std::cout << "Initializing OpenGL...";
-		if (Initializer::initOpenGL()) {
-			std::cout << "OK!\n";
-		}
-		else {
-			std::cout << "FAILED!\n";
+		Window* window = new Window(width,height,true,fps,vsync);
+		if (!window->_glfwWindow) {
+			errorMessage = "Failed to create window!";
 			return false;
 		}
-		std::cout << "Setting callback fucntions...";
-		if (Initializer::setCallbackFunctions()) {
-			std::cout << "OK!\n";
-		}
-		else {
-			std::cout << "FAILED!\n";
+
+		if (!Initializer::initOpenGL()) {
+			errorMessage="Failed to initialize OpenGL!";
+			return false;
+
+}
+		if (!Initializer::setCallbackFunctions(window->_glfwWindow)) {
+			errorMessage="Failed to set callback functions!";
 			return false;
 		}
-		std::cout << "Initializing game objects...";
-		if (Initializer::initializeGameObjects()) {
-			std::cout << "OK!\n";
-		}
-		else {
-			std::cout << "FAILED!\n";
+
+		if (!Initializer::initializeGameObjects()) {
+			errorMessage="Failed to initialize game objects!";
 			return false;
 		}
-		std::cout << "Initializing game thread...";
+
 		try {
-			game::bkgdThread = std::thread(callbackFunctions::backgroundLogic);
+			game::startGame();
 		}
 		catch (std::exception e) {
-			std::cout << "FAILED!\n";
-			std::cout << e.what() << "\n";
+			errorMessage=e.what();
 			return false;
 		}
-		if (game::bkgdThread.joinable()) {
-			std::cout << "OK!\n";
+
+		try {
+			Window::startAllRenderLoop(); //multi-threaded
 		}
-		else {
-			std::cout << "FAILED!\n";
+		catch (std::exception e) {
+			errorMessage=e.what();
 			return false;
 		}
 

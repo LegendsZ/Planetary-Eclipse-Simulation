@@ -1,11 +1,15 @@
 #ifndef INITIALIZER_H
 #define INITIALIZER_H
 
-//#include "Window.h"
+#include <string>
+
+#include "Window.h"
 #include "Misc.h"
 #include "callbackFunctions.h"
+#include "Game.h"
 
 namespace Initializer{
+    inline std::string errorMessage;
     // Initialize GLUT
     //bool initGlut(int argc, char** argv, const int& vWidth, const int& vHeight);
 
@@ -13,10 +17,10 @@ namespace Initializer{
     bool initOpenGL();
 
     // Set up callback functions for glut
-    bool setCallbackFunctions();
+    bool setCallbackFunctions(GLFWwindow* window);
 
     // Initializes all
-    bool InitializeAll(int argc, char** argv, const int& vWidth, const int& vHeight);
+    bool InitializeAll(int width, int height, int fps, int vsync);
 
     //Initializes game objects
     bool initializeGameObjects();

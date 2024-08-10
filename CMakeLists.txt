@@ -9,10 +9,16 @@ find_package(GLFW3 REQUIRED)
 
 # Compile the complete executable against all objects and GLFW libraries
 add_executable(PlanetarySimulation)
+
+# Silence deprecation warnings
+add_definitions(-DGL_SILENCE_DEPRECATION)
+
 target_sources(PlanetarySimulation PRIVATE
   ${CMAKE_SOURCE_DIR}/src/Source.cpp
   ${CMAKE_SOURCE_DIR}/src/Window.cpp
-  #${CMAKE_SOURCE_DIR}/src/Initializer.cpp
+  ${CMAKE_SOURCE_DIR}/src/Initializer.cpp
+  ${CMAKE_SOURCE_DIR}/src/Game.cpp
+  ${CMAKE_SOURCE_DIR}/src/callbackFunctions.cpp
   ${CMAKE_SOURCE_DIR}/src/glad.c
 )
 

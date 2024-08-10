@@ -43,8 +43,6 @@ class Window{
 		static void stopAllRenderLoop();
 		static void renderLoop(Window* window);
 
-		void processInput();
-
 		void close();
 		static void closeAll();
 

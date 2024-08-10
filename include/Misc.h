@@ -1,7 +1,7 @@
 #ifndef MISC_H
 #define MISC_H
 
-#include <GLFW/glfw3.h>
+class GLFloat; //forward declare
 
 namespace staticPropertyValues {
     static GLfloat room_mat_ambient[] = { 0.0f,0.0f,0.0f,1.0f };
