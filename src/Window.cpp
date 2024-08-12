@@ -24,7 +24,7 @@ Window::Window(const int& width, const int& height, bool visible, double cfps, i
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
 	glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
 
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -44,7 +44,7 @@ Window::Window(const int& width, const int& height, bool visible, double cfps, i
 	glfwMakeContextCurrent(_glfwWindow);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
-	glfwGetFramebufferSize(_glfwWindow, &_frameBufferWidth, &_frameBufferHeight);
+	//glfwGetFramebufferSize(_glfwWindow, &_frameBufferWidth, &_frameBufferHeight);
 	//std::cout << _frameBufferWidth << " " << _frameBufferHeight << "\n";
 	//glViewport(0,0,_frameBufferWidth,_frameBufferHeight);
 	windows.push_back(this);
@@ -81,14 +81,14 @@ void Window::render() const{
 	}
 	/* Render here */
 	//glfwMakeContextCurrent(_glfwWindow);
-	glClearColor(5.0f,1.0f,0.0f,1.01f);
+	//glClearColor(5.0f,1.0f,0.0f,1.01f);
 	/* Clear the screen */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	//draw models
 	draw(_drawDetails);
 	/* Swap front and back buffers */
 	glfwSwapBuffers(_glfwWindow);
-	glFlush();
+	//glFlush();
 }
 
 void Window::renderAll(){
@@ -140,6 +140,7 @@ void Window::renderLoop(Window* window) {
 	glfwSwapInterval(window->_vsync); //enables/disables vsync based off user input
 
 	window->_rendering=true;
+	glClearColor(5.0f,1.0f,0.0f,1.01f);
 	while (window->_rendering) {
 		if(glfwWindowShouldClose(window->_glfwWindow)) break;
 		// Calculate the time taken for one frame for the current window
@@ -167,15 +168,26 @@ void Window::renderLoop(Window* window) {
 }
 
 void Window::close(){
+	_rendering=false;
+	glfwSetWindowShouldClose(_glfwWindow, GLFW_TRUE);
 	glfwDestroyWindow(_glfwWindow);
-	glfwTerminate(); //in the case of multiple closures, should this be moved?
+	if (windows.size() == 1) {
+		glfwTerminate();
+	}
+	auto it = std::remove(windows.begin(), windows.end(), this);
+	if (it != windows.end()) {
+		windows.erase(it, windows.end());
+	}
 }
 
 void Window::closeAll(){
-	for (Window* w : windows){
-		w->close();
+	std::vector<Window*> windowsDupe;
+	windowsDupe.assign(windows.begin(), windows.end());
+	for (Window* window : windowsDupe) {
+		window->close();
 	}
-	//glfwTerminate(); ???
+	glfwTerminate();
+	windows.clear();
 }
 
 bool Window::shouldClose() const {

@@ -32,6 +32,7 @@ static drawDetails uploadMesh(const std::vector<vertex>& vertices, const std::ve
 }
 
 static void unloadMesh(std::vector<drawDetails>& details) {
+    std::cout << "Unloading mesh!\n";
     for (auto& d : details) {
         glDeleteBuffers(1, &d.vao);
     }

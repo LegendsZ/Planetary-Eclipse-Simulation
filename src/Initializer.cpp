@@ -66,7 +66,6 @@ namespace Initializer {
 		return true;
 	}
 
-
 	bool setCallbackFunctions(GLFWwindow* window) {
 		try {
 			glfwSetFramebufferSizeCallback(window, callbackFunctions::reshape);
@@ -74,6 +73,8 @@ namespace Initializer {
 			glfwSetCursorPosCallback(window, callbackFunctions::mouseMotionHandler);
 			glfwSetKeyCallback(window, callbackFunctions::keyHandler);
 			glfwSetWindowCloseCallback(window, callbackFunctions::windowCloseHandler);
+
+			signal(SIGINT, callbackFunctions::signalWindowCloseHandler);
 		}catch (std::exception e) {
 			return false;
 		}

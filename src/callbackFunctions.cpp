@@ -33,12 +33,23 @@ namespace callbackFunctions{
     }
 
     void windowCloseHandler(GLFWwindow* window) {
+        std::cout << "Closing window!\n";
         Window* found = Window::findWindow(window);
         if (!found) {
             std::cerr << "Unexpected error: GLFWwindow* not found!\n";
             return;
         }
+        found->stopRenderLoop();
+        found->close();
         unloadMesh(found->_drawDetails);
     }
+
+    void signalWindowCloseHandler(int sigNum) {
+        std::cout << "Closing all windows!\n";
+        for (Window* window : Window::windows) {
+            windowCloseHandler(window->_glfwWindow);
+        }
+    }
+
 
 }
