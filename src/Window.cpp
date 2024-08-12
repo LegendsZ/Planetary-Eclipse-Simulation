@@ -21,13 +21,19 @@ Window::Window(const int& width, const int& height, bool visible, double cfps, i
 		_height = mode->height;
 	}
 
-	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); //problematic?
-	glfwWindowHint(GLFW_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_VERSION_MINOR, 4);
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
+	glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
+
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+
 #ifdef __APPLE__
-	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //problematic?
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); //problematic?
 #endif
 
 	_glfwWindow = glfwCreateWindow(_width, _height, "PlanetarySimulation", NULL, NULL);
@@ -36,7 +42,8 @@ Window::Window(const int& width, const int& height, bool visible, double cfps, i
 		return;
 	}
 	glfwMakeContextCurrent(_glfwWindow);
-	loadGlad();
+	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+
 	glfwGetFramebufferSize(_glfwWindow, &_frameBufferWidth, &_frameBufferHeight);
 	//std::cout << _frameBufferWidth << " " << _frameBufferHeight << "\n";
 	//glViewport(0,0,_frameBufferWidth,_frameBufferHeight);
@@ -59,14 +66,14 @@ void Window::makeContextCurrent() const{
 	glfwMakeContextCurrent(_glfwWindow);
 }
 
-bool Window::loadGlad() {
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { //initialize glad
-		std::cerr << "FAILED TO LOAD GLAD!\n";
-		return false;
+Window* Window::findWindow(GLFWwindow* window) {
+	for (Window* w : windows){
+		if (w->_glfwWindow == window) {
+			return w;
+		}
 	}
-	return true;
+	return nullptr;
 }
-
 
 void Window::render() const{
 	if (!_visible) {
@@ -77,6 +84,8 @@ void Window::render() const{
 	glClearColor(5.0f,1.0f,0.0f,1.01f);
 	/* Clear the screen */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	//draw models
+	draw(_drawDetails);
 	/* Swap front and back buffers */
 	glfwSwapBuffers(_glfwWindow);
 	glFlush();
@@ -124,7 +133,7 @@ void Window::renderLoop(Window* window) {
 	double deltaTime;
 
 	glfwMakeContextCurrent(window->_glfwWindow);
-	if (!loadGlad()) {
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		Window::countRendering--;
 		return;
 	}

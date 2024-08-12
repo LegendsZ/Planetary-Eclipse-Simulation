@@ -7,6 +7,9 @@
 #include <chrono>
 #include <thread>
 #include <iostream>
+#include <Vertex.h>
+
+#include "OpenGLDraw.h"
 
 class Window{
 	public:
@@ -14,6 +17,7 @@ class Window{
 		static std::vector<Window*> windows;
 		static int countRendering;
 		GLFWwindow* _glfwWindow;
+		std::vector<drawDetails> _drawDetails;
 		int _width;
 		int _height;
 		int _frameBufferWidth;
@@ -31,7 +35,8 @@ class Window{
 		Window& operator=(const Window&)=delete;
 
 		static bool initGLFW();
-		static bool loadGlad();
+
+		static Window* findWindow(GLFWwindow* window);
 
 		inline void makeContextCurrent() const;
 

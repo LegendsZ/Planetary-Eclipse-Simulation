@@ -8,13 +8,15 @@
 #include "callbackFunctions.h"
 #include "Game.h"
 
+#include "OpenGLLoader.h"
+
 namespace Initializer{
     inline std::string errorMessage;
     // Initialize GLUT
     //bool initGlut(int argc, char** argv, const int& vWidth, const int& vHeight);
 
     // Set up and enable lighting
-    bool initOpenGL();
+    bool initOpenGL(Window* window);
 
     // Set up callback functions for glut
     bool setCallbackFunctions(GLFWwindow* window);

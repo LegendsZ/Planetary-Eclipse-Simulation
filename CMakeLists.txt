@@ -7,6 +7,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Find the GLFW3 package
 find_package(GLFW3 REQUIRED)
 
+find_package(OpenGL REQUIRED)
+
 # Compile the complete executable against all objects and GLFW libraries
 add_executable(PlanetarySimulation)
 
@@ -26,4 +28,4 @@ target_sources(PlanetarySimulation PRIVATE
 target_include_directories(PlanetarySimulation PRIVATE "${CMAKE_SOURCE_DIR}/include")
 
 # Link libraries for the executable
-target_link_libraries(PlanetarySimulation glfw "-framework OpenGL")
+target_link_libraries(PlanetarySimulation glfw "-framework OpenGL" OpenGL::GL)

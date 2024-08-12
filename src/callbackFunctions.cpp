@@ -1,7 +1,5 @@
 #include "../include/callbackFunctions.h"
 
-#include <iostream>
-
 namespace callbackFunctions{
 
     void reshape(GLFWwindow* window, int width, int height) {
@@ -14,6 +12,10 @@ namespace callbackFunctions{
 
     void mouseMotionHandler(GLFWwindow* window, double xpos, double ypos) {
         // Your mouse motion handling code here
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) //support drag
+        {
+            return;
+        }
     }
 
     void keyHandler (GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -24,6 +26,19 @@ namespace callbackFunctions{
             // Your keyboard repeat handling code here
             std::cout << "Key released: " << key << "\n";
         }
+    }
+
+    void errorHandler(int error, const char* description) {
+        std::cerr << "GLFW Error: " << description << "\n";
+    }
+
+    void windowCloseHandler(GLFWwindow* window) {
+        Window* found = Window::findWindow(window);
+        if (!found) {
+            std::cerr << "Unexpected error: GLFWwindow* not found!\n";
+            return;
+        }
+        unloadMesh(found->_drawDetails);
     }
 
 }

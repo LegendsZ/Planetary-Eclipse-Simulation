@@ -10,7 +10,7 @@ namespace Initializer {
 		return true;
 	}*/
 
-	bool initOpenGL() {
+	bool initOpenGL(Window* window) {
 		/*glLightfv(GL_LIGHT0, GL_AMBIENT, staticPropertyValues::light_ambient);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, staticPropertyValues::light_diffuse);
 		glLightfv(GL_LIGHT0, GL_SPECULAR, staticPropertyValues::light_specular);
@@ -50,15 +50,33 @@ namespace Initializer {
 		callbackFunctions::roomMesh->SetMaterial(ambient, diffuse, specular, shininess);
 		*/
 
+		try {
+			//load models!
+			std::vector<vertex> obj_parts;
+			obj_parts.emplace_back(.5f, -.5f,0.f);
+			obj_parts.emplace_back(-.5f, -.5f,0.f);
+			obj_parts.emplace_back(0.f, .5f,0.f);
+
+			std::vector<uint32_t> elem = {0,1,2};
+			//move movels to window
+			window->_drawDetails.push_back(uploadMesh(obj_parts, elem));
+		}catch (std::exception e) {
+			return false;
+		}
 		return true;
 	}
 
 
 	bool setCallbackFunctions(GLFWwindow* window) {
-		glfwSetFramebufferSizeCallback(window, callbackFunctions::reshape);
-    	glfwSetMouseButtonCallback(window, callbackFunctions::mouse);
-    	glfwSetCursorPosCallback(window, callbackFunctions::mouseMotionHandler);
-    	glfwSetKeyCallback(window, callbackFunctions::keyHandler);
+		try {
+			glfwSetFramebufferSizeCallback(window, callbackFunctions::reshape);
+			glfwSetMouseButtonCallback(window, callbackFunctions::mouse);
+			glfwSetCursorPosCallback(window, callbackFunctions::mouseMotionHandler);
+			glfwSetKeyCallback(window, callbackFunctions::keyHandler);
+			glfwSetWindowCloseCallback(window, callbackFunctions::windowCloseHandler);
+		}catch (std::exception e) {
+			return false;
+		}
 		return true;
 	}
 
@@ -110,26 +128,27 @@ namespace Initializer {
 	}
 
 	bool InitializeAll(int width, int height, int fps, int vsync) {
+		glfwSetErrorCallback(callbackFunctions::errorHandler); // glfw error redirection
+		std::cout << "Initializing...\n";
 		if (!Window::initGLFW()) {
 			errorMessage = "Failed to initialize GLFW!";
 			return false;
 		}
+
 		Window* window = new Window(width,height,true,fps,vsync);
 		if (!window->_glfwWindow) {
 			errorMessage = "Failed to create window!";
 			return false;
 		}
 
-		if (!Initializer::initOpenGL()) {
-			errorMessage="Failed to initialize OpenGL!";
-			return false;
-
-}
 		if (!Initializer::setCallbackFunctions(window->_glfwWindow)) {
 			errorMessage="Failed to set callback functions!";
 			return false;
 		}
-
+		if (!Initializer::initOpenGL(window)) {
+			errorMessage="Failed to initialize OpenGL!";
+			return false;
+		}
 		if (!Initializer::initializeGameObjects()) {
 			errorMessage="Failed to initialize game objects!";
 			return false;
@@ -151,6 +170,7 @@ namespace Initializer {
 			return false;
 		}
 
+		std::cout << "Done initializing!\n";
 		return true;
 	}
 }
