@@ -2,8 +2,6 @@
 #elif __APPLE__
 #endif*/
 
-#include <iostream>
-
 #include "../include/Initializer.h"
 
 int main(int argc, char* argv[]){
@@ -28,7 +26,7 @@ int main(int argc, char* argv[]){
 	}
 
 	if (!Initializer::InitializeAll(width, height, fps, vsync)) {
-		std::cerr << "Failed to initialize:\n" << Initializer::errorMessage << "\n";
+		logger::l_log(2,"Failed to initialize: \n" + Initializer::errorMessage);
 		return 1;
 	}
 
@@ -38,6 +36,6 @@ int main(int argc, char* argv[]){
 	};
 	game::stopGame();
 
-	std::cout << "Goodbye!\n";
+	logger::l_log(0,"Goodbye!");
 	return 0;
 }

@@ -21,22 +21,24 @@ namespace callbackFunctions{
     void keyHandler (GLFWwindow* window, int key, int scancode, int action, int mods) {
         if (action == GLFW_PRESS) {
             // Your keyboard down handling code here
-            std::cout << "Key pressed: " << key << "\n";
+            logger::l_log(0,"Key pressed: " + std::to_string(key));
         }else if (action == GLFW_RELEASE){
             // Your keyboard repeat handling code here
-            std::cout << "Key released: " << key << "\n";
+            logger::l_log(0,"Key released: " + std::to_string(key));
         }
     }
 
     void errorHandler(int error, const char* description) {
         std::cerr << "GLFW Error: " << description << "\n";
+        logger::l_log(2,description);
     }
 
     void windowCloseHandler(GLFWwindow* window) {
-        std::cout << "Closing window!\n";
+        logger::l_log(0,"Closing window!");
         Window* found = Window::findWindow(window);
         if (!found) {
             std::cerr << "Unexpected error: GLFWwindow* not found!\n";
+            logger::l_log(3, "Unexpected error: GLFWwindow* not found!");
             return;
         }
         found->stopRenderLoop();
@@ -45,7 +47,7 @@ namespace callbackFunctions{
     }
 
     void signalWindowCloseHandler(int sigNum) {
-        std::cout << "Closing all windows!\n";
+        logger::l_log(0, "Closing all windows!");
         for (Window* window : Window::windows) {
             windowCloseHandler(window->_glfwWindow);
         }

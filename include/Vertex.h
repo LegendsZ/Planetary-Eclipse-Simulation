@@ -5,7 +5,8 @@
 
 struct vertex {
     vertex (float x, float y, float z): _pos{x, y, z} {}
-    VECTOR3D _pos = {0.0f, 0.0f, 0.0f};
+    //VECTOR3D _pos = {0.0f, 0.0f, 0.0f};
+    float _pos[3] = {0.f,0.f,0.f};
 };
 
 struct drawDetails{

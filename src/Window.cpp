@@ -51,12 +51,9 @@ Window::Window(const int& width, const int& height, bool visible, double cfps, i
 }
 
 bool Window::initGLFW() {
-	//std::cout << "Initializing GLFW...";
 	if (!glfwInit()) { //initialize glfw
-		std::cerr <<  "FAILED!\n";
 		return false;
 	}
-	//std::cout << "OK!\n";
 	Window::initialized=true;
 	return true;
 }
@@ -140,7 +137,7 @@ void Window::renderLoop(Window* window) {
 	glfwSwapInterval(window->_vsync); //enables/disables vsync based off user input
 
 	window->_rendering=true;
-	glClearColor(5.0f,1.0f,0.0f,1.01f);
+	glClearColor(.2f,.2f,.6f,0.f);
 	while (window->_rendering) {
 		if(glfwWindowShouldClose(window->_glfwWindow)) break;
 		// Calculate the time taken for one frame for the current window

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <OpenGLLoader.h>
 #include "Window.h"
+#include "Logger.h"
 
 namespace callbackFunctions {
     void reshape(GLFWwindow* window, int width, int height);
