@@ -8,7 +8,9 @@ namespace game{
     }
     bool stopGame(){
         running = false;
-        bkgdThread.join();
+        if (bkgdThread.joinable()) {
+            bkgdThread.join();
+        }
         return true;
     }
     void backgroundLogic(){

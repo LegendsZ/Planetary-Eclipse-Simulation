@@ -4,8 +4,8 @@ bool Window::initialized=false;
 std::vector<Window*> Window::windows;
 int Window::countRendering = 0;
 
-Window::Window(const int& width, const int& height, bool visible, double cfps, int vsync):
-	_width(width), _height(height), _visible(visible), _cFps(cfps), _frameTime(1.0/cfps), _vsync(vsync), _rendering(false), _frameBufferWidth(0), _frameBufferHeight(0)
+Window::Window(const int& width, const int& height, const char* vertex, const char* fragment, bool visible, double cfps, int vsync):
+	_width(width), _height(height),_visible(visible), _cFps(cfps), _frameTime(1.0/cfps), _vsync(vsync), _rendering(false), _frameBufferWidth(0), _frameBufferHeight(0)
 {
 	if (!initialized) {
 		return;
@@ -44,6 +44,11 @@ Window::Window(const int& width, const int& height, bool visible, double cfps, i
 	glfwMakeContextCurrent(_glfwWindow);
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
+	_shader = loadShader(vertex, fragment);
+	if (_shader == -1) {
+		logger::l_log(3, "Failed to load shader!");
+	}
+
 	//glfwGetFramebufferSize(_glfwWindow, &_frameBufferWidth, &_frameBufferHeight);
 	//std::cout << _frameBufferWidth << " " << _frameBufferHeight << "\n";
 	//glViewport(0,0,_frameBufferWidth,_frameBufferHeight);
@@ -77,10 +82,12 @@ void Window::render() const{
 		return;
 	}
 	/* Render here */
-	//glfwMakeContextCurrent(_glfwWindow);
-	//glClearColor(5.0f,1.0f,0.0f,1.01f);
+	glfwMakeContextCurrent(_glfwWindow);
 	/* Clear the screen */
+	glClearColor(.2f,.2f,.6f,0.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	//use shader
+	glUseProgram(_shader);
 	//draw models
 	draw(_drawDetails);
 	/* Swap front and back buffers */
@@ -137,7 +144,6 @@ void Window::renderLoop(Window* window) {
 	glfwSwapInterval(window->_vsync); //enables/disables vsync based off user input
 
 	window->_rendering=true;
-	glClearColor(.2f,.2f,.6f,0.f);
 	while (window->_rendering) {
 		if(glfwWindowShouldClose(window->_glfwWindow)) break;
 		// Calculate the time taken for one frame for the current window

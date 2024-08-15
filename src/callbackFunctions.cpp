@@ -1,5 +1,7 @@
 #include "../include/callbackFunctions.h"
 
+#include <Game.h>
+
 namespace callbackFunctions{
 
     void reshape(GLFWwindow* window, int width, int height) {
@@ -51,6 +53,7 @@ namespace callbackFunctions{
         for (Window* window : Window::windows) {
             windowCloseHandler(window->_glfwWindow);
         }
+        game::stopGame();
     }
 
 

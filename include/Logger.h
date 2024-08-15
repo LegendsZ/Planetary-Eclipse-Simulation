@@ -5,6 +5,14 @@
 #include "glad/glad.h"
 #include <string>
 
+#define DEBUG
+
+/*#ifdef DEBUG
+#define logger::l_log(type, message) logger::l_log(type, message)
+#else
+#define logger::l_log(type, message)
+#endif*/
+
 namespace logger {
     enum l_type{
         INFO,

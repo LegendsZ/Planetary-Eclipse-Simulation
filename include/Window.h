@@ -17,6 +17,7 @@ class Window{
 		static std::vector<Window*> windows;
 		static int countRendering;
 		GLFWwindow* _glfwWindow;
+		GLuint _shader;
 		std::vector<drawDetails> _drawDetails;
 		int _width;
 		int _height;
@@ -30,7 +31,7 @@ class Window{
 		double _frameTime;
 		std::thread* _thread;
 
-		Window(const int& width, const int& height, bool visible, double cfps,int vsync);
+		Window(const int& width, const int& height, const char* vertex, const char* fragment, bool visible, double cfps,int vsync);
 		Window(const Window&) = delete;
 		Window& operator=(const Window&)=delete;
 

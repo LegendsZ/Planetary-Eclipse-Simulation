@@ -41,4 +41,44 @@ static void unloadMesh(std::vector<drawDetails>& details) {
     logger::l_log(0, "Unloaded mesh!");
 }
 
+static GLuint loadShader(const char* vertex, const char* fragment) {
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertex, nullptr);
+    glCompileShader(vertexShader);
+    GLint success;
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        GLchar infoLog[512];
+        glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
+        logger::l_log(3, "Vertex shader compilation failed: " + std::string(infoLog));
+        return -1;
+    }
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragment, nullptr);
+    glCompileShader(fragmentShader);
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        GLchar infoLog[512];
+        glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
+        logger::l_log(3, "Fragment shader compilation failed: " + std::string(infoLog));
+        return -1;
+    }
+
+    GLuint shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        GLchar infoLog[512];
+        glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
+        logger::l_log(3, "Shader program linking failed: " + std::string(infoLog));
+        return -1;
+    }
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+    return shaderProgram;
+}
+
 #endif //OPENGLLOADER_H
