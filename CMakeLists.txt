@@ -15,8 +15,10 @@ add_executable(PlanetarySimulation)
 # Silence deprecation warnings
 add_definitions(-DGL_SILENCE_DEPRECATION)
 
-# Define DEBUG
-add_definitions(-DDEBUG)
+# Define DEBUG only if CMAKE_BUILD_TYPE is Debug
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DDEBUG)
+endif()
 
 target_sources(PlanetarySimulation PRIVATE
         ${CMAKE_SOURCE_DIR}/src/Source.cpp
