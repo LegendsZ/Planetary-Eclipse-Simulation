@@ -26,7 +26,7 @@ int main(int argc, char* argv[]){
 	}
 
 	if (!Initializer::InitializeAll(width, height, fps, vsync)) {
-		logger::l_log(2,"Failed to initialize: \n" + Initializer::errorMessage);
+		l_log(2,"Failed to initialize: \n" + Initializer::errorMessage);
 		return 1;
 	}
 
@@ -36,6 +36,6 @@ int main(int argc, char* argv[]){
 	};
 	game::stopGame();
 
-	logger::l_log(0,"Goodbye!");
+	l_log(0,"Goodbye!");
 	return 0;
 }

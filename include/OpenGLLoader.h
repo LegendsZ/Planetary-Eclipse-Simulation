@@ -12,24 +12,24 @@ static drawDetails uploadMesh(const std::vector<vertex>& vertices, const std::ve
     uint32_t VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-    logger::l_checkError();
+    l_checkError();
     //creation and setting vbo
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertex), vertices.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0,3,GL_FLOAT, GL_FALSE, sizeof(vertex), (const void*)offsetof(vertex,_pos));
     glEnableVertexAttribArray(0);
-    logger::l_checkError();
+    l_checkError();
     //creation and setting ebo
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof(uint32_t), elements.data(), GL_STATIC_DRAW);
-    logger::l_checkError();
+    l_checkError();
     glBindVertexArray(0);
     glDeleteBuffers(1,&VBO);
     glDeleteBuffers(1,&EBO);
-    logger::l_checkError();
-    logger::l_log(0, "Loaded mesh!");
+    l_checkError();
+    l_log(0, "Loaded mesh!");
     return drawDetails(VAO, elements.size());
 }
 
@@ -38,7 +38,7 @@ static void unloadMesh(std::vector<drawDetails>& details) {
         glDeleteBuffers(1, &d.vao);
     }
     details.clear();
-    logger::l_log(0, "Unloaded mesh!");
+    l_log(0, "Unloaded mesh!");
 }
 
 static GLuint loadShader(const char* vertex, const char* fragment) {
@@ -50,7 +50,7 @@ static GLuint loadShader(const char* vertex, const char* fragment) {
     if (!success) {
         GLchar infoLog[512];
         glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-        logger::l_log(3, "Vertex shader compilation failed: " + std::string(infoLog));
+        l_log(3, "Vertex shader compilation failed: " + std::string(infoLog));
         return -1;
     }
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -60,7 +60,7 @@ static GLuint loadShader(const char* vertex, const char* fragment) {
     if (!success) {
         GLchar infoLog[512];
         glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-        logger::l_log(3, "Fragment shader compilation failed: " + std::string(infoLog));
+        l_log(3, "Fragment shader compilation failed: " + std::string(infoLog));
         return -1;
     }
 
@@ -72,7 +72,7 @@ static GLuint loadShader(const char* vertex, const char* fragment) {
     if (!success) {
         GLchar infoLog[512];
         glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-        logger::l_log(3, "Shader program linking failed: " + std::string(infoLog));
+        l_log(3, "Shader program linking failed: " + std::string(infoLog));
         return -1;
     }
 

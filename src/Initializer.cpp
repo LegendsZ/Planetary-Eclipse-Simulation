@@ -90,7 +90,7 @@ namespace Initializer {
 
 	bool InitializeAll(int width, int height, int fps, int vsync) {
 		glfwSetErrorCallback(callbackFunctions::errorHandler); // glfw error redirection
-		logger::l_log(0, "Initializing...");
+		l_log(0, "Initializing...");
 		if (!Window::initGLFW()) {
 			errorMessage = "Failed to initialize GLFW!";
 			return false;
@@ -144,7 +144,7 @@ namespace Initializer {
 			errorMessage=e.what();
 			return false;
 		}
-		logger::l_log(0,"Done initializing!");
+		l_log(0,"Done initializing!");
 		return true;
 	}
 }
