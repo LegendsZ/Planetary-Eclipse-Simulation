@@ -1,14 +1,16 @@
 #include "../include/Initializer.h"
 
 namespace Initializer {
-	/*bool initGlut(int argc, char** argv, const int& vWidth, const int& vHeight) {
-		glutInit(&argc, argv);
-		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-		glutInitWindowSize(vWidth, vHeight);
-		glutInitWindowPosition(200, 30);
-		glutCreateWindow("3D Room");
-		return true;
-	}*/
+	std::string readFile(const std::string& filePath){
+        std::ifstream fileStream(filePath);
+        if (!fileStream.is_open()) {
+            std::cerr << "Failed to open file: " << filePath << std::endl;
+            return "";
+        }
+        std::stringstream buffer;
+        buffer << fileStream.rdbuf();
+        return buffer.str();
+    }
 
 	bool initOpenGL(Window* window) {
 		try {
@@ -96,7 +98,7 @@ namespace Initializer {
 			return false;
 		}
 
-		const char* vertexShader = "#version 330 core\n"
+		/*const char* vertexShader = "#version 330 core\n"
 				"layout (location = 0) in vec3 aPos;\n"
 				"void main()\n"
 				"{\n"
@@ -108,9 +110,14 @@ namespace Initializer {
 				"void main()\n"
 				"{\n"
 				"   FragColor = vec4(0.8f, 0.3f, 0.02f, 1.0f);\n"
-				"}\n\0";
-
-		Window* window = new Window(width,height,vertexShader, fragmentShader,true,fps,vsync);
+				"}\n\0";*/
+        std::string vertexShader = readFile("shaders/vertex.vert");
+        std::string fragmentShader = readFile("shaders/fragment.frag");
+		if (vertexShader=="" || fragmentShader=="") {
+            errorMessage = "Failed to read shaders:\nVertex Shader="+std::to_string(vertexShader!="")+"\nFragment Shader="+std::to_string(fragmentShader!="");
+            return false;
+        }
+        Window* window = new Window(width,height,vertexShader.c_str(), fragmentShader.c_str(),true,fps,vsync);
 		if (!window->_glfwWindow) {
 			errorMessage = "Failed to create window!";
 			return false;

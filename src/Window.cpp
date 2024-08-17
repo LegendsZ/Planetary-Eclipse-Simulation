@@ -46,7 +46,7 @@ Window::Window(const int& width, const int& height, const char* vertex, const ch
 
 	_shader = loadShader(vertex, fragment);
 	if (_shader == -1) {
-		l_log(3, "Failed to load shader!");
+		l_log(2, "Failed to load shader!");
 	}
 
 	//glfwGetFramebufferSize(_glfwWindow, &_frameBufferWidth, &_frameBufferHeight);

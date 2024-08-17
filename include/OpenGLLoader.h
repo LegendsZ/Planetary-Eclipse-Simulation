@@ -50,7 +50,7 @@ static GLuint loadShader(const char* vertex, const char* fragment) {
     if (!success) {
         GLchar infoLog[512];
         glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-        l_log(3, "Vertex shader compilation failed: " + std::string(infoLog));
+        l_log(2, "Vertex shader compilation failed: " + std::string(infoLog));
         return -1;
     }
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -60,7 +60,7 @@ static GLuint loadShader(const char* vertex, const char* fragment) {
     if (!success) {
         GLchar infoLog[512];
         glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-        l_log(3, "Fragment shader compilation failed: " + std::string(infoLog));
+        l_log(2, "Fragment shader compilation failed: " + std::string(infoLog));
         return -1;
     }
 
@@ -72,7 +72,7 @@ static GLuint loadShader(const char* vertex, const char* fragment) {
     if (!success) {
         GLchar infoLog[512];
         glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-        l_log(3, "Shader program linking failed: " + std::string(infoLog));
+        l_log(2, "Shader program linking failed: " + std::string(infoLog));
         return -1;
     }
 

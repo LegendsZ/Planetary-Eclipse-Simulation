@@ -40,7 +40,7 @@ namespace callbackFunctions{
         Window* found = Window::findWindow(window);
         if (!found) {
             std::cerr << "Unexpected error: GLFWwindow* not found!\n";
-            l_log(3, "Unexpected error: GLFWwindow* not found!");
+            l_log(2, "Unexpected error: GLFWwindow* not found!");
             return;
         }
         found->stopRenderLoop();

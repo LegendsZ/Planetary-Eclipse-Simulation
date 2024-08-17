@@ -12,14 +12,14 @@ namespace logger {
             case 1:
                 sType = "WARNING";
             break;
-            case 3:
+            case 2:
                 sType = "ERROR";
             break;
             default:
                 sType = "UNKNOWN";
             break;
         }
-        (type != 3 ? std::cout : std::cerr) << sType << ": " << message << "\n";
+        (type != 2 ? std::cout : std::cerr) << sType << ": " << message << "\n";
     }
 
     void l_checkError() {

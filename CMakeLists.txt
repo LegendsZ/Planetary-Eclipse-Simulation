@@ -35,3 +35,18 @@ target_include_directories(PlanetarySimulation PRIVATE "${CMAKE_SOURCE_DIR}/incl
 
 # Link libraries for the executable
 target_link_libraries(PlanetarySimulation glfw "-framework OpenGL" "-Wextra-qualification" OpenGL::GL)
+
+# Define the source and destination directories for shaders
+set(SHADERS_SOURCE_DIR "${CMAKE_SOURCE_DIR}/shaders")
+set(SHADERS_DEST_DIR "${CMAKE_BINARY_DIR}/shaders")
+
+# Add a custom command to copy the shaders directory
+add_custom_command(
+        OUTPUT ${SHADERS_DEST_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${SHADERS_SOURCE_DIR} ${SHADERS_DEST_DIR}
+        COMMENT "Copying shaders directory to build folder"
+)
+
+# Ensure the custom command is executed
+add_custom_target(copy_shaders ALL DEPENDS ${SHADERS_DEST_DIR})
