@@ -18,6 +18,9 @@ namespace Initializer{
     // Read a file and return its contents
     std::string readFile(const std::string& filePath);
 
+    // Print OpenGL information
+    void printGLInfo();
+
     // Set up and enable lighting
     bool initOpenGL(Window* window);
 

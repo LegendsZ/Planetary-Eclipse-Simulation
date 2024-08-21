@@ -12,19 +12,52 @@ namespace Initializer {
         return buffer.str();
     }
 
+    void printGLInfo(){
+        gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+        const GLubyte* vendor = glGetString(GL_VENDOR);
+        const GLubyte* renderer = glGetString(GL_RENDERER);
+        const GLubyte* version = glGetString(GL_VERSION);
+        GLint major, minor;
+        glGetIntegerv(GL_MAJOR_VERSION, &major);
+        glGetIntegerv(GL_MINOR_VERSION, &minor);
+        const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+        l_log(0, "OpenGL Vendor: " + std::string((const char*)vendor));
+        l_log(0, "OpenGL Renderer: " + std::string((const char*)renderer));
+        l_log(0, "OpenGL Version: " + std::string((const char*)version));
+        l_log(0, "OpenGL Version (integer): " + std::to_string(major) + "." + std::to_string(minor));
+        l_log(0, "GLSL Version: " + std::string((const char*)glslVersion));
+    }
+
 	bool initOpenGL(Window* window) {
 		try {
-			//load models!
+            /* DEPRECATED WAY TO LOAD MODEL
 			std::vector<vertex> obj_parts;
 			obj_parts.emplace_back(.5f, -.5f,0.f);
 			obj_parts.emplace_back(-.5f, -.5f,0.f);
 			obj_parts.emplace_back(0.f, .5f,0.f);
 			std::vector<uint32_t> elem = {0,1,2};
-			//move movels to window
-			window->_drawDetails.push_back(uploadMesh(obj_parts, elem));
-		}catch (std::exception e) {
-			return false;
-		}
+			//move models to window
+			window->_drawDetails.push_back(uploadMesh(obj_parts, elem));*/
+
+
+            GLfloat vertices[] = {
+                0.5f, -0.5f, 0.0f,
+                -0.5f, -0.5f, 0.0f,
+                0.0f, 0.5f, 0.0f
+            };
+            GLfloat colours[] = {
+                1.0f, 0.0f, 0.0f,
+                0.0f, 1.0f, 0.0f,
+                0.0f, 0.0f, 1.0f
+            };
+            GLuint elements[] = {
+                0, 1, 2
+            };
+            window->_drawDetails.push_back(uploadMesh(vertices, colours, sizeof(vertices)/sizeof(vertices[0]), elements, sizeof(elements)/sizeof(elements[0])));
+
+        }catch (std::exception e) {
+            return false;
+        }
 		return true;
 	}
 
@@ -92,36 +125,25 @@ namespace Initializer {
 
 	bool InitializeAll(int width, int height, int fps, int vsync) {
 		glfwSetErrorCallback(callbackFunctions::errorHandler); // glfw error redirection
-		l_log(0, "Initializing...");
-		if (!Window::initGLFW()) {
-			errorMessage = "Failed to initialize GLFW!";
-			return false;
-		}
+        l_log(0, "Initializing...");
+        if (!Window::initGLFW()) {
+            errorMessage = "Failed to initialize GLFW!";
+            return false;
+        }
 
-		/*const char* vertexShader = "#version 330 core\n"
-				"layout (location = 0) in vec3 aPos;\n"
-				"void main()\n"
-				"{\n"
-				"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-				"}\0";
-
-		const char* fragmentShader = "#version 330 core\n"
-				"out vec4 FragColor;\n"
-				"void main()\n"
-				"{\n"
-				"   FragColor = vec4(0.8f, 0.3f, 0.02f, 1.0f);\n"
-				"}\n\0";*/
         std::string vertexShader = readFile("shaders/vertex.vert");
         std::string fragmentShader = readFile("shaders/fragment.frag");
-		if (vertexShader=="" || fragmentShader=="") {
+        if (vertexShader=="" || fragmentShader=="") {
             errorMessage = "Failed to read shaders:\nVertex Shader="+std::to_string(vertexShader!="")+"\nFragment Shader="+std::to_string(fragmentShader!="");
             return false;
         }
         Window* window = new Window(width,height,vertexShader.c_str(), fragmentShader.c_str(),true,fps,vsync);
-		if (!window->_glfwWindow) {
-			errorMessage = "Failed to create window!";
-			return false;
-		}
+        if (!window->_glfwWindow) {
+            errorMessage = "Failed to create window!";
+            return false;
+        }
+
+        printGLInfo();
 
 		if (!Initializer::setCallbackFunctions(window->_glfwWindow)) {
 			errorMessage="Failed to set callback functions!";

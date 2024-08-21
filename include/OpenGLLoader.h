@@ -6,7 +6,7 @@
 #include "Logger.h"
 #include <GLFW/glfw3.h>
 
-static drawDetails uploadMesh(const std::vector<vertex>& vertices, const std::vector<uint32_t> elements){
+static drawDetails uploadMesh_deprecated(const std::vector<vertex>& vertices, const std::vector<uint32_t> elements){
     if (vertices.empty() || elements.empty()) throw("Empty vectors!");
 
     uint32_t VAO, VBO, EBO;
@@ -33,12 +33,45 @@ static drawDetails uploadMesh(const std::vector<vertex>& vertices, const std::ve
     return drawDetails(VAO, elements.size());
 }
 
+static drawDetails uploadMesh(const GLfloat* vertices, const GLfloat* colours, const int vCount, const GLuint* elems, const int eCount){
+    GLuint vaoHandle;
+    glGenVertexArrays(1, &vaoHandle);
+    glBindVertexArray(vaoHandle);
+    l_checkError();
+    GLuint vboHandles[2];
+    glGenBuffers(2, vboHandles);//one for vertices, one for colours
+    l_checkError();
+    GLuint verticesBufferHandle = vboHandles[0];
+    glBindBuffer(GL_ARRAY_BUFFER, verticesBufferHandle);
+    glBufferData(GL_ARRAY_BUFFER, vCount * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(0);
+    l_checkError();
+    GLuint colourBufferHandle = vboHandles[1];
+    glBindBuffer(GL_ARRAY_BUFFER, colourBufferHandle);
+    glBufferData(GL_ARRAY_BUFFER, vCount * sizeof(GLfloat), colours, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(1);
+    l_checkError();
+    GLuint eboHandle;
+    glGenBuffers(1, &eboHandle);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboHandle);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, eCount * sizeof(GLuint), elems, GL_STATIC_DRAW);
+    l_checkError();
+    glBindVertexArray(0);
+    glDeleteBuffers(2,vboHandles);
+    glDeleteBuffers(1,&eboHandle);
+    l_checkError();
+    l_log(0, "Loaded mesh!");
+    return {vaoHandle, (uint32_t) eCount};
+}
+
 static void unloadMesh(std::vector<drawDetails>& details) {
     for (auto& d : details) {
         glDeleteBuffers(1, &d.vao);
     }
     details.clear();
-    l_log(0, "Unloaded mesh!");
+    l_log(0, "Unloaded meshes!");
 }
 
 static GLuint loadShader(const char* vertex, const char* fragment) {
