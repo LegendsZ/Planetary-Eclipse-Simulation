@@ -144,6 +144,14 @@ void Window::renderLoop(Window* window) {
 	glfwSwapInterval(window->_vsync); //enables/disables vsync based off user input
 
 	window->_rendering=true;
+#ifdef DEBUG
+    /*l_log(0, "Window: " + std::to_string((long long int)window->_glfwWindow));
+    for (int i = 0; i < window->_drawDetails.size(); ++i) {
+        l_log(0, "DrawDetail: " + std::to_string(i) + " VAO: " + std::to_string(window->_drawDetails[i].vao));
+        QueryAttributes(window->_drawDetails[i].vao);
+    }*/
+    queryAttributes(window->_shader);
+#endif //DEBUG
 	while (window->_rendering) {
 		if(glfwWindowShouldClose(window->_glfwWindow)) break;
 		// Calculate the time taken for one frame for the current window

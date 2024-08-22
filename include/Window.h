@@ -10,6 +10,7 @@
 #include <Vertex.h>
 
 #include "OpenGLDraw.h"
+#include "QueryAttributes.h"
 
 class Window{
 	public:

@@ -40,13 +40,17 @@ target_link_libraries(PlanetarySimulation glfw "-framework OpenGL" "-Wextra-qual
 set(SHADERS_SOURCE_DIR "${CMAKE_SOURCE_DIR}/shaders")
 set(SHADERS_DEST_DIR "${CMAKE_BINARY_DIR}/shaders")
 
-# Add a custom command to copy the shaders directory
-add_custom_command(
+# Add a custom command to delete the shaders directory in the build folder
+
+# Add a custom command to copy the shaders directory to the build folder
+add_custom_command( # doesnt overwrite correctly...
         OUTPUT ${SHADERS_DEST_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${SHADERS_SOURCE_DIR} ${SHADERS_DEST_DIR}
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${SHADERS_DEST_DIR}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${SHADERS_DEST_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHADERS_SOURCE_DIR} ${SHADERS_DEST_DIR}
         COMMENT "Copying shaders directory to build folder"
 )
 
 # Ensure the custom command is executed
+#add_custom_target(delete_shaders ALL DEPENDS ${SHADERS_DEST_DIR})
 add_custom_target(copy_shaders ALL DEPENDS ${SHADERS_DEST_DIR})

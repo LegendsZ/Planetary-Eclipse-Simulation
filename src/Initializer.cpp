@@ -39,7 +39,6 @@ namespace Initializer {
 			//move models to window
 			window->_drawDetails.push_back(uploadMesh(obj_parts, elem));*/
 
-
             GLfloat vertices[] = {
                 0.5f, -0.5f, 0.0f,
                 -0.5f, -0.5f, 0.0f,
